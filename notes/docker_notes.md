@@ -122,3 +122,79 @@ Building Docker files
 - If you have commands on separate lines, it will create separate layers
   - Generally screw readability if it saves a layer, it seems
 - CMD inherits from parent images
+
+Working with Volumes
+
+- Generally named, and do not have a slash leading the name (vs the bind-mount below)
+- Created as part of the `container run` command if not found
+- Persist after container shuts down
+- Can be connected to multiple containers
+- Example: `-v psql:/var/lib/postgresql/data postgres:9.6.1`
+  - Would create a psql colume that persists
+
+Working with bind-mounts
+
+- Bindmounts are a type of volume that directly maps to the host FS
+- Paths always begin a slash to signify it is a bind-mount and not a volume
+- Great for development work on static files
+  - ex: `docker container run --detach --name nginx --publish 80:80 --volume $(pwd):/usr/share/nginx/html nginx`
+- Example static site generator
+
+
+Watching contianers
+
+- `docker container logs -f psql` will get the logs posted as per above
+
+Docker compose
+
+- Separate binary, not designed for production grade stuff
+- Spins everything up and tears it down for us
+- It has versions, and it can be used with swarm
+- Either use `docker-compose.yml` or use the `-f` parameter to specify otherwise
+- Compose understands that `.` is pwd
+- If there is only one option, it is in KW pairs
+- If there are multiple options, it's in list formats in KW pairs 
+
+Compose cli
+
+- `docker compose up` does all the work
+- You can tear down and remove networks and volumes via `docker-compose down -v`
+- If the image exists, compose won't rebuild if there is an existing version
+- You can use `docker-compose build` or `docker-compose up --build` to get a fresh build
+- You can add build instructions in the docker-compose.yml under the `build` directive
+- `docker-compose down --rmi local` will take out the images that are built along the way too
+- If you `build`, then the `image` will become the name of the built image, otherwise it's the public image name
+
+Docker swarm notes
+
+- There is a ton of stuff in here
+- There are worker nodes and manager nodes
+- To get it going, `docker swarm init`
+- To see what's going on `docker info`, look for swarm data
+- To see what nodes are attached `docker node ls`
+  - Manager status of leader means it holds the config?
+- You can promote workers to managers and vice versa
+
+Docker service replaces docker run
+
+- `docker service ls` shows services in the swarm, similar to a container or set of containers
+- `docker service ps XYZ` shows the mode and replicas involved
+- You can still use `docker container ls` and get information from that
+
+Using docker-machine to control vms
+
+- `docker-machine` is a binary just like docker-compose
+- `docker-machine ls` will show you all nodes available
+- `docker-machine env nodeXYZ` will switch you over to that node
+- Swap nodes with `eval $(docker-machine env nodeXYZ)`
+- When setting up actual servers like in DigitalOcean, you can use `docker swarm init -- advertise-addr MYADDR`
+- After, you can have each server join the swarm, they will need manager keys if you want them to manage too
+- Then you can spin up containers across the swarm using the `--replicas 3` and it will spread them out
+  - `docker service update serviceXYZ --replicas 3`
+- You can promote using `docker node update --role`
+
+Networking in swarm
+
+- `--driver overlay` helps with inter-node communication
+- `docker network create --driver overlay networkXYZ`
+- 
