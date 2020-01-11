@@ -193,8 +193,22 @@ Using docker-machine to control vms
   - `docker service update serviceXYZ --replicas 3`
 - You can promote using `docker node update --role`
 
+Also:
+
+- You can scale out a service via `docker service scale serviceXYZ=3`
+- Get logs with `docker container logs psql.(tab_complete)`
+
 Networking in swarm
 
 - `--driver overlay` helps with inter-node communication
 - `docker network create --driver overlay networkXYZ`
-- 
+- Can add to no overlay, or more than one overlay networks
+- IPSec (AES) encryption can be turned on, but is off by default for performance reasons
+- Create a service to connect to overlay network
+  - `docker network create --driver overlay mynetwork`
+  - `docker service create --name psql --network mynetwork -e POSTGRES_PASSWORD=mypass postgres`
+- Now, these two will talk to each other with the overlay network
+- Setting up drupal you will put in db:postgres, username:postgres, host:psql (name of the service!)
+
+
+
