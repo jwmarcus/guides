@@ -38,7 +38,7 @@ Using Serial port /dev/serial0
    ADC Value                     50
 ```
 
-If you fail to get this result (i.e. infinte retries), try other ports such as /dev/ttyS0, /dev/ttyAMA0, or you may need to disable the bluetooth chip in /boot/config with options to free up the uart chip like so:
+If you fail to get this result (i.e. infinite retries), try other ports such as /dev/ttyS0, /dev/ttyAMA0, or you may need to disable the bluetooth chip in /boot/config with options to free up the uart chip like so:
 
 ```
 dtoverlay=pi3-disable-bt
