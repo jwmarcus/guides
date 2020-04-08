@@ -10,13 +10,6 @@ To host a BBS for receiving amateur radio traffic.
 A functioning Raspberry Pi with a serial connected KISS style TNC. Many are available like the MFJ-1270X, or the Coastal ChipWorks TNC-X. If you find a cheap source for a TNC, PLEASE EMAIL ME. I'm not thrilled with the $150 price tag for a KISS TNC from MFJ. :/
 
 
-## Installing the tools for packet operation
-
-`sudo apt-get install ax25-tools ax25-node ax25-apps telnet`
-
-Note: telnet is used for local testing of access to the BBS
-
-
 ## Resetting the TNC-Pi to factory
 
 From [the manual](https://tnc-x.com/TNCPi.pdf): Turning the TXDelay potentiometer (R6) all the way to minimum and then powering back up, you should see the yellow LED flash once per second. When you see it flash, you’ll know that the parameters have all been reset. The power the device back down, move the TXDelay off of minimum and power the device back up.
@@ -62,45 +55,44 @@ Get a second HT and tune to an unused frequency like 144.200 or the like. With y
 
 Now is the time to reality check the project. You should be able to:
 
-1. Key up on a connected HT to the TNC-Pi and hear a solid tone on another HT. The tone should be full but not over-driven.
+1. Key up on a connected HT to the TNC-Pi and hear a solid tone on another HT. **The tone should be full but not over-driven.**
 2. Run `pitnc_getparams` to get current settings from your TNC.
 
+In the next steps, we will configure the software to control the TNC. After that, we can setup our BBS. After this next section of software TNC control, you should be able to call _INTO_ BBS stations if you have any in your area. You will also be able to monitor traffic you send.
 
-## Configuring axports
 
-The /etc/ax25/axports file determines which interfaces are available to the rest of the AX 25 toolset, and therefore your BBS. Axports sets the values for the following (taken straight from Richard Osgood's [amazing guide](https://www.richardosgood.com/blog/how-to-setup-a-raspberry-pi-packet-radio-node-with-zork/).
+## Installing the tools for packet operation
 
-If you had the line: `0  CALLSIGN-N  9600  255  2  145.030 MHz (1200bps)` in axports, you are telling the AX25 suite of tools the following:
+You will need a few packages for this next step. Go ahead and run:
 
-- 0 – The name or number you assign to this device, used to reference in `kissattach`
-- CALLSIGN-N – Callsign. The (-N) is a number from 1 to 15, it is optional but if you run multiple devices your SSID, as this is called, will tell each apart.
-- 9600 – Baud rate of the device, NOT the protocol. 9600 baud is common.
-- 255 – Packet length (paclen). The quantity of data you send with each transmission.
-- 2 – Window. AX25 is a "GO BACK N" style of protocol with window size from 1 to 7 packets. Fel free to read [this paper from the University of Bucharest](https://ftp.unpad.ac.id/orari/library/library-sw-hw/amateur-radio/packet-radio/simp.pdf) if you would like to learn more. 2 is a fine number.
-- 145.030 MHz (1200bps) – This is a text description of the port.
+`sudo apt-get install ax25-tools ax25-node ax25-apps telnet`
+
+_Note: telnet is used for local testing of access to the BBS_
+
+
+## Configuring axports to define devices/"services"
+
+The /etc/ax25/axports file determines which interfaces are available to the rest of the AX 25 toolset, and therefore your BBS. Axports sets the values for the following (taken straight from Richard Osgood's [amazing guide](https://www.richardosgood.com/blog/how-to-setup-a-raspberry-pi-packet-radio-node-with-zork/) parameters.
+
+If you add the (very sensible) line to the axports file: `0  CALLSIGN-N  9600  255  2  145.030 MHz (1200bps)`, you are telling the AX25 suite of tools the following:
+
+- 0 - The name or number you assign to this device, used to reference in `kissattach` in a later step. In this example "0" is your device name.
+- CALLSIGN-N – Callsign. The (-N) is a number suffix from 1 to 15, it is optional but if you run multiple devices your SSID (as this is called) will give you a way to distinguish each device you operate. X1ABC and X1ABC-5 represent the same licensed operator, but different devices. This is common if you run both PACTOR, BBS, APRS and other digital modes using the same callsign.
+- 9600 – Baud rate of the device, NOT the protocol. 9600 baud is common for hardware TNCs unless otherwise listed.
+- 255 – Packet length (paclen). The quantity of data you send with each transmission. 255 is generally a good balance between transmission speed and odds of a packet surviving the airwaves.
+- 2 – Window. AX25 is a "GO BACK N" style of protocol with window size from 1 to 7 packets. Hyper-nerd warning: Feel free to read [this paper from the University of Bucharest](https://ftp.unpad.ac.id/orari/library/library-sw-hw/amateur-radio/packet-radio/simp.pdf) if you would like to learn more. 2 is a fine number.
+- "145.030 MHz (1200bps)" – This is a text description of the device/service we are providing to the other AX25 tools.
+
 
 ## Configuring ax25 daemon 
 
-Per [the documentation](http://manpages.ubuntu.com/manpages/trusty/man5/ax25d.conf.5.html) each callsign entry line is of the format `peer window t1 t2 t3 idle n2 mode uid exec args...`. "Specifying a * for the AX.25 port name allows the following callsign entries to be valid for all the operating AX.25 ports using the callsign specified."
+Per [the documentation](http://manpages.ubuntu.com/manpages/trusty/man5/ax25d.conf.5.html) each callsign entry line is of the format `peer window t1 t2 t3 idle n2 mode uid exec args...`. Further: "Specifying a * for the AX.25 port name allows the following callsign entries to be valid for all the operating AX.25 ports using the callsign specified." We are in essence telling axports that we have a station that will handle all requests with the following line:
 
-# Setting up the TNC-pi
 
-Here is the order I do things:
 
-3. Get the params to determine if your serial port is working. Use pitnc_getparams found on http://www.tnc-x.com/params.zip
-4. If you don't get a connection, you may need to enable the serial interface by adding the following line at the bottom of /boot/config.txt: dtoverlay=pi3-miniuart-bt
+Holding pen:
+------------
 
-notes on Pi3 and later
-Seems you need to use `raspi-config` to disable the login over serial (the 1st question) but the second question that comes up enables the interface.
-
-Notes from W9IQ:
-
-```
-Assuming that you have:
-
-correctly connected your Baofeng to the TNC
-installed the AX25-tools and AX25-apps
-configured /etc/ax25/axports with your call and the baud rate
 attached the serial port to the AX.25 system using kissattach
 then you may first want to listen for AX25 traffic on that frequency by typing:
 
@@ -109,5 +101,3 @@ Finally, you can connect to the BBC by typing:
 
  axcall 1 WE1CT-4
 There should be a short pause and then you will see the splash screen from the BBS.
-```
-
