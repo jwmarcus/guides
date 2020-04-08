@@ -74,6 +74,14 @@ _Note: telnet is used for local testing of access to the BBS_
 
 The /etc/ax25/axports file determines which interfaces are available to the rest of the AX 25 toolset, and therefore your BBS. Axports sets the values for the following (taken straight from Richard Osgood's [amazing guide](https://www.richardosgood.com/blog/how-to-setup-a-raspberry-pi-packet-radio-node-with-zork/) parameters.
 
+------------
+
+Proof reading level one
+
+------------
+
+# TODO: Test this IRL below
+
 If you add the (very sensible) line to the axports file: `0  CALLSIGN-N  9600  255  2  145.030 MHz (1200bps)`, you are telling the AX25 suite of tools the following:
 
 - 0 - The name or number you assign to this device, used to reference in `kissattach` in a later step. In this example "0" is your device name.
@@ -84,14 +92,36 @@ If you add the (very sensible) line to the axports file: `0  CALLSIGN-N  9600  2
 - "145.030 MHz (1200bps)" – This is a text description of the device/service we are providing to the other AX25 tools.
 
 
-## Configuring ax25 daemon 
+## Adding netrom configuration for node hopping capabilites
+
+By adding netrom you get things like node hopping, it seems.
+
+TODO
+
+
+## Configuring ax25 daemon (even more config)
 
 Per [the documentation](http://manpages.ubuntu.com/manpages/trusty/man5/ax25d.conf.5.html) each callsign entry line is of the format `peer window t1 t2 t3 idle n2 mode uid exec args...`. Further: "Specifying a * for the AX.25 port name allows the following callsign entries to be valid for all the operating AX.25 ports using the callsign specified." We are in essence telling axports that we have a station that will handle all requests with the following line:
 
 
+## Run kissattach
+
+TODO
+
+
+## Run Axlisten to start a monitor
+
+TODO
+
+
+## Run Axcall to call another station
+
+TODO
+
+
 
 Holding pen:
-------------
+----1--------
 
 attached the serial port to the AX.25 system using kissattach
 then you may first want to listen for AX25 traffic on that frequency by typing:
