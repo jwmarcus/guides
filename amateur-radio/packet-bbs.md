@@ -289,11 +289,28 @@ At this point you should be able to (1) Connect to your NODE with a web browser 
 
 ## BBS Mail configuration
 
+To enable Mail services on your NODE, simply add `LINMAIL=1`. You will then need to add an application line so that the NODE will allow users to use it. Here is an example configuration:
+
+```
+; --- Node application configuration ---
+; Docs: http://www.cantab.net/users/john.wiseman/Documents/BPQCFGFile.html##Appl
+; APPLICATION n,CMD,New Command,Call,Alias,Quality,L2Alias
+LINMAIL=1 ; Enable mail application
+APPLICATION 1,BBS,,,, ; Let users get to BBS from Node
+```
+
+From Kevin Hooke's post [here](https://www.kevinhooke.com/2016/01/28/linbpq-configure-via-web-page-before-bbs-and-chat-apps-start/), you will need to access and complete the blank lines in the BBS (or chat) applications. _Hit the admin web pages for both bbs and chat, and complete the blank fields in the config. For me these where the applicationID and Streams values. The Id matches the id value of the app in the bpq32.cfg file. Streams is I think number of concurrent clients. Save values, restart, and you should be good._
+
+You will need to access the NODE via a browser, and add in `BBS APPL No` to match the APPLICATION directive from earlier. I set streams to 10.
+
+Afterwards, restart and you should be able to see `BBS listed in your application menu (use ? to display it). You can specify a direct path to this application by using the `Call` field in the APPLICATION configuration. For example, you could have MYCALL-10 go the the main NODE, and MYCALL-11 go straight to the BBS.
+
+
+# --- STOP ---
+
+At this point you should be able to (1) Connect to your NODE and issue the BBS command to bring up the linmail application. Pat yourself on the back. You did it! Over time this guide will evolve to support additional parameters and features of AX.25 packet radio. The hope is that this guide will get you on the air and moving traffic!
+
+
+## Additional resources:
+
 TODO
-
-
-## Other applications (CHAT, etc.)
-
-TODO
-
-
