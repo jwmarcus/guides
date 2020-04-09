@@ -125,7 +125,115 @@ Next, we need to give linbpq a configuration to work from. While this file can b
 
 ## Telnet and management dashboard setup
 
-TODO
+Here is the minimal `bpq32.cfg` file to run linbpq:
+
+```
+; Sample bpq32.cfg configuration by W1JWM
+; Includes:
+;   - Telnet, HTTP, TCP access for management
+;   - KISS TNC Support
+
+; Please see the full documentation for more details:
+; http://www.cantab.net/users/john.wiseman/Documents/BPQCFGFile.html
+
+
+; --- Begin required parameter section ---
+LOCATOR=NONE ; Enable reporting to node map, or NONE
+             ; http://www.cantab.net/users/john.wiseman/Documents/BPQNodeMap.htm
+NODECALL=MYCALL ; Node callsign
+NODEALIAS=ALIAS ; Alias 
+
+; Message sent with station identification
+IDMSG:
+Network node (BPQ)
+***
+
+; Text sent in reply to "I" (info) message
+INFOMSG:
+MYCALL Test Swtich, My QTH
+***
+
+CTEXT:
+MYCALL Test Switch
+***
+
+; You can also use the "SIMPLE" option to set many of these values automatically
+
+BBS=1 ; This enables application support.
+NODE=1 ; This allows users to connect to your node, and then connect out to other stations.
+       ; If NODE=0, then uses will only be able to connect to your applications,
+       ; and not to the node command handler.
+ENABLE_LINKED=A ; Allow LINKED command use by gateway apps only
+FULL_CTEXT=0 ; Send the full text to every user that connects, even stations making a jump
+             ; Leave at 0 for forwarding compatibility
+BTINTERVAL=60 ; Minutes between beacons are sent
+BUFFERS=999 ; Number of packet buffers available. 999 = as many as possible (usually around 600)
+C_IS_CHAT=1 ; Using "C" without a call opens chat
+HIDENODES=0 ; Suppresses the display of NODES with an Alias that starts with a # sign.
+IDINTERVAL=10 ; ID timing in minutes
+IDLETIME=900 ; Idle link shutdown timer in seconds
+L3TIMETOLIVE=25 ; Maximum Level 3 hops
+L4DELAY=10 ; Level 4 Delayed ACK timer
+L4RETRIES=3 ; Level 4 Retries
+L4TIMEOUT=60 ; Level 4 Timeout
+L4WINDOW=4 ; Level 4 Window
+MAXCIRCUITS=128 ; Number of L4 Circults. Each connection through your node uses two L4 Circuit entries.
+MAXNODES=250 ; Number of Nodes (L4 destinations)
+MAXHOPS=4 ; Used for INP3 routing. The largest hop count to be added to your IMP3 routing table
+MAXLINKS=64 ; Maximum Level 2 lines (Uplink, Downlink and Internode)
+MAXROUTES=64 ; Number of adjacent Nodes
+MAXRTT=90 ; Used for INP3 routing. The largest Round Trip Time to be added to your IMP3 routing table
+MINQUAL=150 ; Minimum Quality to add to NODES table.
+NODESINTERVAL=30 ; 'NODES' interval in minutes
+OBSINIT=6 ; Initial obsolescence value
+OBSMIN=5 ; Minimum to broadcast
+PACLEN=236; Max packet size: PACLEN is a problem! The ideal size depends on the link(s) over
+            ; which a packet will be sent.
+AUTOSAVE=1 ; Causes the NODES and ROUTES tables to be saved to file BPQNODES.DAT when the switch closes.
+SAVEMH=1 ; Tells Node to save and restore MH lists when shut down and restarted
+T3=180 ; Link validation timer in seconds
+; FULLCTEXT=1 ; Deprecated
+; IPGATEWAY=0 ; Enable IP traffic over AX.25
+; LINKEDFLAG='A' ; Deprecated
+; --- End required parameter section ---
+```
+
+As you can see, there is a lot going on here. Please take the time to read the documentation, as the configuration options are endless. Make sure to replace MYCALL with your actual call sign. Next we will put in a section after the previous configuration section with a PORT definition for HTTP.
+
+```
+; --- Telnet, TCP, and HTTP port configuration ---
+; Docs: http://www.cantab.net/users/john.wiseman/Documents/TelnetServer.htm
+PORT
+  ID=Telnet Server
+  DRIVER=Telnet
+  CONFIG ; Driver specific configuration, must come immediately before ENDPORT
+    LOGGING=1 ; Enables logging of connections
+    DisconnectOnClose=1 ; If set to 1, the telnet session will be disconnected
+                        ; when the user leaves an application.
+    TCPPORT=8010 ; The port users connect to for TELNET Sessions.
+    FBBPORT=8011 ; FBBPORT is used for FBB forwarding, and other applications,
+                 ; such as Winpack or BPQTermTCP that need a transparent TCP
+                 ; connection rather than the full TELNET protocol.
+    HTTPPORT=8080 ; The port users connect to for HTTP (Web) Sessions.
+    LOGINPROMPT=user:
+    PASSWORDPROMPT=password:
+    MAXSESSIONS=10 ; The number of simultaneous sessions you want to allow
+  
+    CTEXT=Telnet access to server\nEnter ? for commands \n\n ; The text that a user is sent when connected.
+    USER=John,PaSsWoRd,G8BPQ ; user,password,callsign,default-app,sysop
+    USER=JohnBBS,password,g8bpq,BBS ; User and password are case sensitive. Call is converted to upper case
+    USER=John,password,g8bpq,,SYSOP ; You can allow access to anyone not defined in a USER record by adding 
+                                    ; the line USER=ANON,pass
+    
+    ; CMS=1 ; This provides a facility to send and receive messages to/from the WL2K CMS Servers
+    ; CMSCALL=G8BPQ-10
+    ; CMSPASS=XXXXXXX
+ENDPORT
+```
+
+Now run `./linbpq` and the program will automatically grab this file and work to convert it. If you get a "Conversion (probably) successful" proceed to http://device-name.local:8080 where device-name is the name of your device (e.g. `raspberrypi`).
+
+If you unzip the html files into a folder called "HTML" in the folder root, you will also get styled pages. You should have downloaded them in the [installation documentation](http://www.cantab.net/users/john.wiseman/Documents/InstallingLINBPQ.htm).
 
 
 ## Simple KISS Terminal configuration and radio interface
