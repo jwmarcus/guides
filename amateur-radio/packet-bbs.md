@@ -235,6 +235,8 @@ Now run `./linbpq` and the program will automatically grab this file and work to
 
 If you unzip the html files into a folder called "HTML" in the folder root, you will also get styled pages. You should have downloaded them in the [installation documentation](http://www.cantab.net/users/john.wiseman/Documents/InstallingLINBPQ.htm).
 
+Additionally, if you would like to connect to the NODE similar to as you would over the air, run `telnet device-name.local 8010` and get the "user:" prompt. In the above example, you would need to use the "PaSsWoRd" user, as the third user entry in the example is the SYSOP password command and doens't apply to the node itself, it seems. Try typing "?" to get a list of commands.
+
 
 ## Simple KISS Terminal configuration and radio interface
 
