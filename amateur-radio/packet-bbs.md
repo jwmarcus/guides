@@ -204,6 +204,7 @@ As you can see, there is a lot going on here. Please take the time to read the d
 ; --- Telnet, TCP, and HTTP port configuration ---
 ; Docs: http://www.cantab.net/users/john.wiseman/Documents/TelnetServer.htm
 PORT
+  PORTNUM=1 ; Named port number
   ID=Telnet Server
   DRIVER=Telnet
   CONFIG ; Driver specific configuration, must come immediately before ENDPORT
@@ -240,7 +241,50 @@ Additionally, if you would like to connect to the NODE similar to as you would o
 
 ## Simple KISS Terminal configuration and radio interface
 
-TODO
+Now that we can connect into the NODE, we want to make a call OUT to another station. Let's add a PORT section in our bpq32.cfg for our packet TNC. We don't need to do the `kissattach` / `axcall` dance anymore, because linBPQ takes care of these connections for us.
+
+```
+; Docs: http://www.cantab.net/users/john.wiseman/Documents/KISS.html
+
+PORT
+ PORTNUM=2 ; Named port number
+ ID=TNC KISS Port (145.XXX MHz) ; Up to 30 chars, appears on PORTS display
+ TYPE=ASYNC ; ASYNC is for KISS or NETROM TNC connected to a serial port
+ PROTOCOL=KISS ; Protocol to be used on the link.
+ FRACK=7000 ; Level 2 timout in milliseconds
+ RESPTIME=1000 ; Level 2 delayed ack timer in milliseconds
+ RETRIES=10 ; Level 2 maximum retry value
+ MAXFRAME=4 ; Maximum outstanding frames.
+ PACLEN=236 ; Default maximum packet length for this port
+ TXDELAY=500 ; TX Keyup delay in milliseconds
+ SLOTTIME=100 ; CSMA interval timer (milliseconds)
+ PERSIST=64 ; 'Probability to transmit' value (1-255)
+ 
+ COMPORT=/dev/ttyUSB0 ; The COM Port Number or device path
+ SPEED=19200 ; The async link speed for KISS and NETROM links
+ CHANNEL=A ; Selects port on HDLC cards, dual port KISS (eg KPC4)
+ ; KISSOPTIONS=PITNC,NOPARAMS ; For TNC-PI, don't sent TXDELAY, etc.
+ENDPORT
+```
+
+The comments should give you a good idea of which option does which, but as always, read the [documentation for KISS ports](http://www.cantab.net/users/john.wiseman/Documents/KISS.html) on the G8BPQ site.
+
+Restart your linbpq server to load the new settings. Now connect to the NODE using telnet like before. When you connect, run the PORTS command and you should see your KISS port listed:
+
+```
+ALIAS:MYCALL} Ports
+  1 Telnet
+  2 TNC KISS Port (145.xxx MHz)
+```
+
+We can now try calling a nearby node using the CONNECT command. `CONNECT 2 X1ABC` where the first parameter is the port to use to call (2 in this case) and then we provide either a callsign or an alias. In this manner, we can call other stations over different devices just by specificying the port number when making the CONNECT command.
+
+Note: You can also run "CONNECT" by just typing "C". If you run "C" without a callsign, the NODE will attempt to start the "CHAT" application. This comes from the "C\_IS\_CHAT" parameter set earlier in this guide.
+
+
+# --- STOP ---
+
+At this point you should be able to (1) Connect to your NODE with a web browser OR telnet, (2) interact with nearby NODEs using the `CALL 2 X1ABC` command when connected by telnet. In the next section, we will setup our mail application.
 
 
 ## BBS Mail configuration
@@ -251,4 +295,5 @@ TODO
 ## Other applications (CHAT, etc.)
 
 TODO
+
 
