@@ -7,7 +7,7 @@ To host a BBS for receiving amateur radio traffic.
 
 ## Prerequisites
 
-A functioning Raspberry Pi with a serial connected KISS style TNC. Many are available like the MFJ-1270X, or the Coastal ChipWorks TNC-X. If you find a cheap source for a TNC, PLEASE EMAIL ME. I'm not thrilled with the $150 price tag for a KISS TNC from MFJ. :/
+A functioning Raspberry Pi with a serial connected KISS style TNC. Many are available like the MFJ-1270X, or the Coastal ChipWorks TNC-X. If you find a cheap source for a TNC, PLEASE SUBMIT A PR WITH INFORMATION. I'm not thrilled with the $150 price tag for a KISS TNC from MFJ. :/
 
 
 ## Resetting the TNC-Pi to factory
@@ -20,7 +20,7 @@ From [the manual](https://tnc-x.com/TNCPi.pdf): Turning the TXDelay potentiomete
 Depending on your version and hardware, you will need to (1) disable the serial TTY and (2) enable serial communications. The easiest way to do this is to use `raspi-config`. Under interfacing/serial, disable the serial terminal (TTY) option. You will be prompted with a second prompt to enable JUST the serial ports.
 
 
-## Confirm serial comm:
+## Confirm serial communication:
 
 Download and unzip the two binary files located at http://www.tnc-x.com/params.zip and unzip. Use `chmod +x pitnc_*` to give those two files permissions to execute. Attempt to extract the settings on the board with `sudo ./pitnc_getparams /dev/serial0 0`. The port may vary slightly depending on your hardware. The `0` at the end tells the program to use serial mode vs i2c mode (uncommon). You should see something like the following:
 
@@ -61,11 +61,15 @@ Now is the time to reality check the project. You should be able to:
 In the next steps, we will configure the software to control the TNC. After that, we can setup our BBS. After this next section of software TNC control, you should be able to call _INTO_ BBS stations if you have any in your area. You will also be able to monitor traffic you send.
 
 
+# Sending your first packet on the air
+
+Our next step will involve sending and receiving a raw packet using the axcall tools and your HT. 
+
 ## Installing the tools for packet operation
 
 You will need a few packages for this next step. Go ahead and run:
 
-`sudo apt-get install ax25-tools ax25-node ax25-apps telnet`
+`sudo apt-get install ax25-tools ax25-apps telnet`
 
 _Note: telnet is used for local testing of access to the BBS_
 
@@ -74,60 +78,67 @@ _Note: telnet is used for local testing of access to the BBS_
 
 The /etc/ax25/axports file determines which interfaces are available to the rest of the AX 25 toolset, and therefore your BBS. Axports sets the values for the following (taken straight from Richard Osgood's [amazing guide](https://www.richardosgood.com/blog/how-to-setup-a-raspberry-pi-packet-radio-node-with-zork/) parameters.
 
-------------
-
-Proof reading level one
-
-------------
-
-# TODO: Test this IRL below
-
-If you add the (very sensible) line to the axports file: `0  CALLSIGN-N  9600  255  2  145.030 MHz (1200bps)`, you are telling the AX25 suite of tools the following:
+If you add the (very sensible) line to the axports file: `0  CALLSIGN-N  19200  255  2  145.030 MHz (1200bps)`, you are telling the AX25 suite of tools the following:
 
 - 0 - The name or number you assign to this device, used to reference in `kissattach` in a later step. In this example "0" is your device name.
 - CALLSIGN-N – Callsign. The (-N) is a number suffix from 1 to 15, it is optional but if you run multiple devices your SSID (as this is called) will give you a way to distinguish each device you operate. X1ABC and X1ABC-5 represent the same licensed operator, but different devices. This is common if you run both PACTOR, BBS, APRS and other digital modes using the same callsign.
-- 9600 – Baud rate of the device, NOT the protocol. 9600 baud is common for hardware TNCs unless otherwise listed.
+- 19200 – Baud rate of the device, NOT the protocol. 19200 baud is common for hardware TNCs unless otherwise listed.
 - 255 – Packet length (paclen). The quantity of data you send with each transmission. 255 is generally a good balance between transmission speed and odds of a packet surviving the airwaves.
 - 2 – Window. AX25 is a "GO BACK N" style of protocol with window size from 1 to 7 packets. Hyper-nerd warning: Feel free to read [this paper from the University of Bucharest](https://ftp.unpad.ac.id/orari/library/library-sw-hw/amateur-radio/packet-radio/simp.pdf) if you would like to learn more. 2 is a fine number.
 - "145.030 MHz (1200bps)" – This is a text description of the device/service we are providing to the other AX25 tools.
 
 
-## Adding netrom configuration for node hopping capabilites
+## Attach an interface to the TNC device path
 
-By adding netrom you get things like node hopping, it seems.
+Now, we need to create an interface for our TNC. Running `sudo kissattach 0 /dev/ttyAMA0` will create one for you. Replace "0" with your device name from axports and "/dev/ttyAMA0" with your device path.
+
+
+## Adjust volume settings and listen to packets
+
+Turn on your HT and turn the volume to low. If you drive the speaker too hard, the receiver will overload and not decode your packets. I generally set mine at ~20% volume. Connect your serial to HT adapter at this time.
+
+To listen to and decode packets, run `sudo axlisten -a` to listen and decode on all interfaces. the terminal will be blank until it receives packets over the air. To test this, tune to 144.390 and listen for ARS packets. The AX25 tools will be able to decode them. You could also use another transmitter and transmit packets over the speaker. Check the internet for example packet audio.
+
+You should see the "RX" or "Decode" LED light up when your tnc decodes a packet.
+
+
+## Run Axcall to test transmission
+
+Transmit a packet by using `axcall 0 X1ABC`. The "0" is your interface name, the "X1ABC" is the station you are calling. This program automatically retries if it does not hear a response. Press Ctrl+C to kill the program. Test this by turning on another receiver and listening for the distinctive packet noise on the air. NOTE: For some reason, many TNCs get "stuck" and don't transmit on the first call. If you close (Ctrl+C) and retry `axcall`, it will generally work the second time.
+
+You should see the "TX" LED light up on your tnc when packets are being sent. Additionally, if you run `axlisten` in a separate terminal, you should see your packets being sent.
+
+
+# --- STOP ---
+
+At this point you should be able to (1) Transmit a "Call" packet, (2) listen to and decode packets. If you have a BBS within range, you can use `axcall` to attempt to reach that board. In the next section, we will use the linbpq software to create a more user friendly BBS client as well as to host our BBS board.
+
+
+## Installing LinBPQ
+
+From [the documentation](http://www.cantab.net/users/john.wiseman/Documents/InstallingLINBPQ.htm), LINBPQ is a Linux version of the BPQ32 Node, BBS and Chat Server components. BPQ32 is a very commonly used and very in-depth application make by John Wiseman, G8BPQ. It is still in development as of March 31, 2020.
+
+The official documentation on downloading the binary is great. Please [read the "Installation" section](http://www.cantab.net/users/john.wiseman/Documents/InstallingLINBPQ.htm) and follow along.
+
+Next, we need to give linbpq a configuration to work from. While this file can be daunting, we are going to build up our station one feature at a time. First, we will enable telnet support and the management dashboard.
+
+
+## Telnet and management dashboard setup
 
 TODO
 
 
-## Configuring ax25 daemon (even more config)
-
-Per [the documentation](http://manpages.ubuntu.com/manpages/trusty/man5/ax25d.conf.5.html) each callsign entry line is of the format `peer window t1 t2 t3 idle n2 mode uid exec args...`. Further: "Specifying a * for the AX.25 port name allows the following callsign entries to be valid for all the operating AX.25 ports using the callsign specified." We are in essence telling axports that we have a station that will handle all requests with the following line:
-
-
-## Run kissattach
+## Simple KISS Terminal configuration and radio interface
 
 TODO
 
 
-## Run Axlisten to start a monitor
+## BBS Mail configuration
 
 TODO
 
 
-## Run Axcall to call another station
+## Other applications (CHAT, etc.)
 
 TODO
 
-
-
-Holding pen:
-----1--------
-
-attached the serial port to the AX.25 system using kissattach
-then you may first want to listen for AX25 traffic on that frequency by typing:
-
- sudo axlisten –a
-Finally, you can connect to the BBC by typing:
-
- axcall 1 WE1CT-4
-There should be a short pause and then you will see the splash screen from the BBS.
