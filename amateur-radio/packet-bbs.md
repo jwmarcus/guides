@@ -90,7 +90,7 @@ If you add the (very sensible) line to the axports file: `0  CALLSIGN-N  19200  
 
 ## Attach an interface to the TNC device path
 
-Now, we need to create an interface for our TNC. Running `sudo kissattach 0 /dev/ttyAMA0` will create one for you. Replace "0" with your device name from axports and "/dev/ttyAMA0" with your device path.
+Now, we need to create an interface for our TNC. Running `sudo kissattach /dev/ttyAMA0 0` will create one for you. Replace "0" with your device name from axports and "/dev/ttyAMA0" with your device path.
 
 
 ## Adjust volume settings and listen to packets
