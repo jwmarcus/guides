@@ -322,17 +322,14 @@ After logging in via the web interface using `http://127.0.0.1:8080`, naviagate 
 - Don't Request Name (Checked) ; I already have your callsign
 - Don't Request Home BBS (Checked) ; I can look this up if it really mattered to me
 
-Next, navigate to "Users" and add permissions (Check the box) to your user for:
+Next, navigate to "Users" and Create a user for your BBS (if it doesn't already exist). Add permissions (Check the box) to your user for:
 
 - Permit Email
 - Don't add @winlink.org
 - SYSOP
 - BBS
 
-You can also add a password to your user. Now save your user record.
-
-Restart your linbpq and your settings should be applied.
-
+Create a password for your user for WebMail Access. Now save your user record. Restart your linbpq and your settings should be applied.
 
 
 ## Additional resources:
