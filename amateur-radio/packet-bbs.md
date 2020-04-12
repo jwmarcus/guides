@@ -164,7 +164,7 @@ NODE=1 ; This allows users to connect to your node, and then connect out to othe
        ; If NODE=0, then uses will only be able to connect to your applications,
        ; and not to the node command handler.
 ENABLE_LINKED=A ; Allow LINKED command use by gateway apps only
-FULL_CTEXT=0 ; Send the full text to every user that connects, even stations making a jump
+FULL_CTEXT=1 ; Send the full text to every user that connects, even stations making a jump
              ; Leave at 0 for forwarding compatibility
 BTINTERVAL=60 ; Minutes between beacons are sent
 BUFFERS=999 ; Number of packet buffers available. 999 = as many as possible (usually around 600)
@@ -192,9 +192,7 @@ PACLEN=236; Max packet size: PACLEN is a problem! The ideal size depends on the 
 AUTOSAVE=1 ; Causes the NODES and ROUTES tables to be saved to file BPQNODES.DAT when the switch closes.
 SAVEMH=1 ; Tells Node to save and restore MH lists when shut down and restarted
 T3=180 ; Link validation timer in seconds
-; FULLCTEXT=1 ; Deprecated
 ; IPGATEWAY=0 ; Enable IP traffic over AX.25
-; LINKEDFLAG='A' ; Deprecated
 ; --- End required parameter section ---
 ```
 
@@ -221,10 +219,10 @@ PORT
     MAXSESSIONS=10 ; The number of simultaneous sessions you want to allow
   
     CTEXT=Telnet access to server\nEnter ? for commands \n\n ; The text that a user is sent when connected.
-    USER=John,PaSsWoRd,G8BPQ ; user,password,callsign,default-app,sysop
-    USER=JohnBBS,password,g8bpq,BBS ; User and password are case sensitive. Call is converted to upper case
-    USER=John,password,g8bpq,,SYSOP ; You can allow access to anyone not defined in a USER record by adding 
-                                    ; the line USER=ANON,pass
+    USER=user1,pass1,G8BPQ ; user,password,callsign,default-app,sysop
+    USER=user2,pass2,G8BPQ,,SYSOP ; User and password are case sensitive. Call is converted to upper case
+                                  ; You can allow access to anyone not defined in a USER record by adding 
+                                  ; the line USER=ANON,pass
     
     ; CMS=1 ; This provides a facility to send and receive messages to/from the WL2K CMS Servers
     ; CMSCALL=G8BPQ-10
@@ -236,7 +234,7 @@ Now run `./linbpq` and the program will automatically grab this file and work to
 
 If you unzip the html files into a folder called "HTML" in the folder root, you will also get styled pages. You should have downloaded them in the [installation documentation](http://www.cantab.net/users/john.wiseman/Documents/InstallingLINBPQ.htm).
 
-Additionally, if you would like to connect to the NODE similar to as you would over the air, run `telnet device-name.local 8010` and get the "user:" prompt. In the above example, you would need to use the "PaSsWoRd" user, as the third user entry in the example is the SYSOP password command and doens't apply to the node itself, it seems. Try typing "?" to get a list of commands.
+Additionally, if you would like to connect to the NODE similar to as you would over the air, run `telnet device-name.local 8010` and get the "user:" prompt. Try typing "?" to get a list of commands.
 
 
 ## Simple KISS Terminal configuration and radio interface
@@ -253,7 +251,7 @@ PORT
  PROTOCOL=KISS ; Protocol to be used on the link.
  FRACK=7000 ; Level 2 timout in milliseconds
  RESPTIME=1000 ; Level 2 delayed ack timer in milliseconds
- RETRIES=10 ; Level 2 maximum retry value
+ RETRIES=5 ; Level 2 maximum retry value
  MAXFRAME=4 ; Maximum outstanding frames.
  PACLEN=236 ; Default maximum packet length for this port
  TXDELAY=500 ; TX Keyup delay in milliseconds
@@ -301,7 +299,7 @@ APPLICATION 1,BBS,,,, ; Let users get to BBS from Node
 
 From Kevin Hooke's post [here](https://www.kevinhooke.com/2016/01/28/linbpq-configure-via-web-page-before-bbs-and-chat-apps-start/), you will need to access and complete the blank lines in the BBS (or chat) applications. _Hit the admin web pages for both bbs and chat, and complete the blank fields in the config. For me these where the applicationID and Streams values. The Id matches the id value of the app in the bpq32.cfg file. Streams is I think number of concurrent clients. Save values, restart, and you should be good._
 
-You will need to access the NODE via a browser, and add in `BBS APPL No` to match the APPLICATION directive from earlier. I set streams to 10.
+You will need to access the NODE via a browser, and add in `BBS APPL No` to match the APPLICATION directive from earlier. I set streams to 10. As you will not have any users set yet, access via `http://127.0.0.1:8080` which will log you in as the BBS itself. You can create and make your user a SYSOP in later steps.
 
 Afterwards, restart and you should be able to see `BBS listed in your application menu (use ? to display it). You can specify a direct path to this application by using the `Call` field in the APPLICATION configuration. For example, you could have MYCALL-10 go the the main NODE, and MYCALL-11 go straight to the BBS.
 
@@ -309,6 +307,32 @@ Afterwards, restart and you should be able to see `BBS listed in your applicatio
 # --- STOP ---
 
 At this point you should be able to (1) Connect to your NODE and issue the BBS command to bring up the linmail application. Pat yourself on the back. You did it! Over time this guide will evolve to support additional parameters and features of AX.25 packet radio. The hope is that this guide will get you on the air and moving traffic!
+
+
+## Configuring WebMail for BPQ32
+
+After logging in via the web interface using `http://127.0.0.1:8080`, naviagate to Mail Management -> Configuration. I have made the following adjustments to the defaults:
+
+- Redirect msgs to BBS Call to SYSOP Call (Checked) ; I want anything that get's sent "at" the board
+- BBS APPL No (1) ; This matches my APPLICATION directive in bpq32.cfg
+- Streams (10)
+- Send System Msgs to SYSOP Call (Checked) ; I want messages sent to SYSTEM, too
+- Don't Hold Messages From New Users (Checked) ; Yolo board
+- Set Don't add WINLINK.ORG flag on new users (Checked) ; Not doing winlink on my board
+- Don't Request Name (Checked) ; I already have your callsign
+- Don't Request Home BBS (Checked) ; I can look this up if it really mattered to me
+
+Next, navigate to "Users" and add permissions (Check the box) to your user for:
+
+- Permit Email
+- Don't add @winlink.org
+- SYSOP
+- BBS
+
+You can also add a password to your user. Now save your user record.
+
+Restart your linbpq and your settings should be applied.
+
 
 
 ## Additional resources:
