@@ -1,7 +1,10 @@
-! Title: JM3 Despises the Internet
-! Description: A list to block everything but the essential elements of LinkedIn
+[Adblock Plus 2.0]
 ! Version: 1
-! Last modified: 2024-03-12
+! Title: JM3 Despises the Internet
+! Last modified: 12 Mar 2024 14:21 UTC
+! Expires: 20 days (update frequency)
+! Homepage: https://www.jwmarcus.com/
+! License: http://creativecommons.org/licenses/by/3.0/
 
 ! The LinkedIn logo, I'm petty. 
 linkedin.com##.global-nav__branding-logo
