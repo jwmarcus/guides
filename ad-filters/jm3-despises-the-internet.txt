@@ -1,30 +1,15 @@
 [Adblock Plus 2.0]
-! Version: 1
+! Version: 202403121032
 ! Title: JM3 Despises the Internet
 ! Last modified: 12 Mar 2024 14:21 UTC
-! Expires: 20 days (update frequency)
-! Homepage: https://www.jwmarcus.com/
-! License: http://creativecommons.org/licenses/by/3.0/
-
-! The LinkedIn logo, I'm petty. 
+! Expires: 4 days (update frequency) 
+! Homepage: 
+!
 linkedin.com##.global-nav__branding-logo
-
-! [Home, Jobs, Notifications, For Business, Sales Nav] icons
 linkedin.com##.global-nav__primary-items > li:nth-of-type(1)
 linkedin.com##.global-nav__primary-items > li:nth-of-type(3)
 linkedin.com##.global-nav__primary-items > li:nth-of-type(5)
 linkedin.com##.global-nav__primary-items > li:nth-of-type(7)
 linkedin.com##.global-nav__primary-items > li:nth-of-type(8)
-
-! Entire middle section
-! Comment this out if using the "finite-scroll" filters below
 linkedin.com##.scaffold-layout__main
-
-! Main feed in both viewports.
-! Uncomment this and comment out the layout__main to get back
-! the post / images prompt. 
-! linkedin.com##.scaffold-finite-scroll
-! linkedin.com##.scaffold-finite-scroll--finite
-
-! News and Ads on right bar
 linkedin.com##.scaffold-layout__aside
