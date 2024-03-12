@@ -1,9 +1,9 @@
 [Adblock Plus 2.0]
 ! Version: 202403121032
-! Title: JM3 Despises the Internet
+! Title: JM3 Minimal LinkedIn Layout
 ! Last modified: 12 Mar 2024 14:21 UTC
 ! Expires: 4 days (update frequency) 
-! Homepage: 
+! Homepage: https://www.jwmarcus.com
 !
 linkedin.com##.global-nav__branding-logo
 linkedin.com##.global-nav__primary-items > li:nth-of-type(1)
