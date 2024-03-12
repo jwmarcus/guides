@@ -1,0 +1,27 @@
+! Title: JM3 Despises the Internet
+! Description: A list to block everything but the essential elements of LinkedIn
+! Version: 1
+! Last modified: 2024-03-12
+
+! The LinkedIn logo, I'm petty. 
+linkedin.com##.global-nav__branding-logo
+
+! [Home, Jobs, Notifications, For Business, Sales Nav] icons
+linkedin.com##.global-nav__primary-items > li:nth-of-type(1)
+linkedin.com##.global-nav__primary-items > li:nth-of-type(3)
+linkedin.com##.global-nav__primary-items > li:nth-of-type(5)
+linkedin.com##.global-nav__primary-items > li:nth-of-type(7)
+linkedin.com##.global-nav__primary-items > li:nth-of-type(8)
+
+! Entire middle section
+! Comment this out if using the "finite-scroll" filters below
+linkedin.com##.scaffold-layout__main
+
+! Main feed in both viewports.
+! Uncomment this and comment out the layout__main to get back
+! the post / images prompt. 
+! linkedin.com##.scaffold-finite-scroll
+! linkedin.com##.scaffold-finite-scroll--finite
+
+! News and Ads on right bar
+linkedin.com##.scaffold-layout__aside
