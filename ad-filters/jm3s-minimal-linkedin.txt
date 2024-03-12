@@ -1,7 +1,7 @@
 [Adblock Plus 2.0]
-! Version: 202403121032
+! Version: 202403121137
 ! Title: JM3 Minimal LinkedIn Layout
-! Last modified: 12 Mar 2024 14:21 UTC
+! Last modified: 12 Mar 2024 11:37 EDT
 ! Expires: 4 days (update frequency) 
 ! Homepage: https://www.jwmarcus.com
 !
@@ -11,6 +11,8 @@ linkedin.com##.global-nav__primary-items > li:nth-of-type(3)
 linkedin.com##.global-nav__primary-items > li:nth-of-type(5)
 linkedin.com##.global-nav__primary-items > li:nth-of-type(7)
 linkedin.com##.global-nav__primary-items > li:nth-of-type(8)
-linkedin.com##.scaffold-layout__main
+linkedin.com##.scaffold-finite-scroll
 linkedin.com##.scaffold-layout__aside
 linkedin.com##.scaffold-layout__sidebar
+linkedin.com##.share-box-feed-entry__closed-share-box
+linkedin.com##.scaffold-layout__main > div:nth-of-type(2)
