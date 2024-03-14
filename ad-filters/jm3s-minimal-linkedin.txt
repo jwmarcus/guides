@@ -15,3 +15,4 @@ linkedin.com##.scaffold-layout__aside
 linkedin.com##.scaffold-layout__sidebar
 linkedin.com##.share-box-feed-entry__closed-share-box
 linkedin.com##.scaffold-layout__main > div:nth-of-type(2)
+linkedin.com##.scaffold-layout__main > div > .scaffold-finite-scroll
