@@ -75,7 +75,8 @@
                     text.includes('finds this funny') ||
                     text.includes('finds this insightful') ||
                     text.includes('celebrates this') ||
-                    text.includes('job update')) {
+                    text.includes('job update') ||
+                    text.includes('supports this')) {
                     
                     const post = span.closest('div.feed-shared-update-v2');
                     if (post && hidePost(post)) {
