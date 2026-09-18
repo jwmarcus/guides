@@ -1,67 +1,176 @@
-# A cheat sheet on how to work with git, kinda.
+# Git development cheat sheet
 
-These are the steps that I use when I develop code, either on my own, or with others. I use tools like GitHub as the collaboration and code review is much nicer on the web, sometimes.
-## Branching 
+This supplements the [beginner path](../README.md). Git checkpoints in later project work use these commands.
 
-When first starting to write a new feature or fix a bug, start by branching off with:
+Run these commands in Ubuntu Bash. The remote workflow assumes an existing repository with a `main` branch and an `origin` remote; the local practice exercises do not need a remote.
 
+Replace every placeholder before you run a command. Do not keep `Your Name`, `you@example.com`, or `new-feature` as literal values.
+
+## Identity
+
+Git identity is who is recorded on commits. It is not login to GitHub or any other host.
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
 ```
-git branch new-feature
-git checkout new-feature
 
-# shorthand: git checkout -b new-feature
+Replace `"Your Name"` and `"you@example.com"` with the name and email you intend to appear on commits.
+
+## Default branch for new repositories
+
+```bash
+git config --global init.defaultBranch main
 ```
+
+This only affects repositories you create later with `git init`. See [git init](https://git-scm.com/docs/git-init).
+
+It does not rename an existing local branch, and it does not change a hosted default branch. Remote default-branch migration is a separate operation.
+
+## Feature branch
+
+Start from an up-to-date local `main`:
+
+```bash
+git switch main
+git pull --ff-only origin main
+git switch -c new-feature
+```
+
+Replace `new-feature` with the branch name you intend. `--ff-only` updates `main` only when it can fast-forward; see [git pull](https://git-scm.com/docs/git-pull).
 
 ## Staging
 
-After creating and checking out the branch, write your code. Add files, **stage** the files that have changed or added with:
+Stage explicit paths. Do not use a blanket `git add .` in this workflow.
 
+```bash
+git add path/to/file
+git diff --cached
 ```
-git add file-to-add-or-update
-```
+
+`git diff` shows unstaged changes in tracked files. Untracked files do not appear in that diff; `git status` lists them.
+
+`git diff --cached` shows what is already staged for the next commit.
 
 ## Committing
 
-Now commit those staged changes:
+After reviewing the staged diff and running the project checks, commit when you intend to save that checkpoint:
 
-```
+```bash
 git commit -m "Describe your changes here"
 ```
 
+## Rebasing onto main
+
+Stay on the feature branch. Fetch, then rebase onto the remote main, not a possibly stale local `main`:
+
+```bash
+git fetch origin
+git rebase origin/main
+```
+
+See [git rebase](https://git-scm.com/docs/git-rebase).
+
+## Conflicts
+
+If rebase stops, inspect the files Git could not apply:
+
+```bash
+git status
+```
+
+Edit each conflicted file, stage the resolution, then continue, or abort and return to the pre-rebase state:
+
+```bash
+git add path/to/resolved-file
+git rebase --continue
+```
+
+```bash
+git rebase --abort
+```
+
+## History rewrite
+
+Rewrite history only on your own unpublished branch.
+
+If the branch is already published, coordinate with anyone who based work on it. Agree on the update before rewriting shared history.
+
+## Squashing (optional, own branch)
+
+After the rebase onto `origin/main`, you may squash your feature commits on that same unpublished branch:
+
+```bash
+git rebase -i origin/main
+```
+
+Keep `pick` on the first commit. Change each later `pick` to `squash`. If there is only one commit, there is nothing to squash.
+
 ## Pushing
 
-Once done, don't forget to push this to the `origin`, i.e. the remote server:
-
-```
-git push origin new-feature
+```bash
+git push -u origin new-feature
 ```
 
-## Rebasing against main
-
-After your feature is complete (and also during development) you will want to make sure your branch does not conflict with the main branch. It is the responsibility of the branch owner to not conflict with the main branch on merge into main, so it's time to `rebase` your branch. This will take the point where your branch separated from main, and put that at the HEAD of main. It will then try to re-run each commit. To do this and solve as we go we use:
-
-```
-git pull origin main  # to get the latest main changes locally
-git rebase main       # rebase against the head of main
-```
-
-## Squashing
-
-Next we will rebase again. This time we are rebasing against our own branch, which will allow us to squash all our commits into one commit. We use the command `git merge-base my-feature main` to get the SHA for the commit where we diverged from main. In this case, it's actually the HEAD of main because we reattached our branch to the head of main in the last step. We can combine these into one handy command:
-
-```
-git rebase -i $(git merge-base my-feature main)
-```
-
-This will open a text editor with a list of the last `n` commits, each prefixed with the word "pick". To squash the commits, replace "pick" with "squash" or "s" for each commit you want to squash into the previous one, then save and close the editor.
+`-u` sets upstream tracking so later `git push` and `git pull` on this branch have a remote.
 
 ## Merging
 
-Finally, you can merge your feature branch into main with a fast-forward merge:
+Local fast-forward onto `main` is one delivery path:
 
-```
-git checkout main
-git merge --ff-only feature
+```bash
+git switch main
+git pull --ff-only origin main
+git merge --ff-only new-feature
 ```
 
-This command will only allow the merge to proceed if it can be resolved as a fast-forward, ensuring a linear history and no merge commits. If a fast-forward merge is not possible, the merge will not proceed, and you'll get a message indicating that the merge could not be performed.
+Push only if pushing `main` is the intended delivery:
+
+```bash
+git push origin main
+```
+
+Hosted projects that use pull requests often merge on the host instead. In that case push `new-feature`, open the pull request, and let the host merge; do not also merge locally unless that is the project process.
+
+## Optional first GitHub push
+
+Git identity (`user.name` and `user.email`) is not remote authentication.
+
+Inspect remotes before changing anything:
+
+```bash
+git remote -v
+```
+
+If the GitHub remote is already SSH (`git@github.com:`), leave it. Do not rewrite an existing SSH remote automatically.
+
+The steps below apply to HTTPS GitHub remotes (`https://github.com/...`).
+
+If Homebrew is installed and `gh` is missing, install GitHub CLI with Homebrew. Skip the install when `command -v gh` already prints a path. Formula: [gh](https://formulae.brew.sh/formula/gh).
+
+```bash
+command -v gh
+```
+
+```bash
+brew install gh
+```
+
+If you do not use Homebrew, install GitHub CLI from the [upstream GitHub CLI page](https://cli.github.com/) rather than adding another package manager.
+
+Then authenticate in the browser with the account you intend, and point Git's HTTPS helper at that login:
+
+```bash
+gh auth login --hostname github.com --git-protocol https --web
+gh auth setup-git --hostname github.com
+```
+
+Choose the intended account in the browser. Manuals: [gh auth login](https://cli.github.com/manual/gh_auth_login), [gh auth setup-git](https://cli.github.com/manual/gh_auth_setup-git).
+
+After HTTPS auth, push as in the pushing section above.
+
+## Sources
+
+- [git init](https://git-scm.com/docs/git-init)
+- [git pull](https://git-scm.com/docs/git-pull)
+- [git rebase](https://git-scm.com/docs/git-rebase)

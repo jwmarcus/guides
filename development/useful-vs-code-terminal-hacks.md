@@ -1,13 +1,27 @@
-# Useful hacks
+# Useful VS Code terminal hacks
 
-## Keyboard shortcuts
+This is optional. The [beginner path](../README.md) works in Ubuntu Bash without VS Code. Start from [Windows 11 to Ubuntu on WSL 2](zero-to-command-line-windows.md) if you do not yet have an Ubuntu project directory.
 
-### Terminal: browse by command
+Install Visual Studio Code on Windows and the WSL extension. Details: [Developing in WSL](https://code.visualstudio.com/docs/remote/wsl).
 
-You can use `CTRL + UP/DOWN` to navigate to the previous or next line where you input a command. You can further use `CTRL + SHIFT + UP/DOWN` to navi
+From the Ubuntu project directory, open that Linux folder in VS Code:
 
+```bash
+code .
+```
 
+Confirm the window is a WSL session (status bar shows a WSL remote such as `WSL: Ubuntu`) and that the integrated terminal is Linux. In that terminal, `pwd` should print the Linux project path (typically under `/home/...`). If `pwd` is under `/mnt/c`, you opened a Windows path, not the Linux workspace.
 
-### VS Code: Toggle the terminal
+## Command names, not guessed keys
 
-If you use the integrated a lot in VS Code, you can open a new terminal with `CTRL + SHIFT + Tilde` to create a new terminal. If you want to switch back and forth between the main editor window and the terminal, simply use `CTRL + Tilde`
+Keyboard bindings differ by layout and user settings.
+
+Use the Command Palette and the command name, or look the current binding up under Keyboard Shortcuts (Command Palette: `Preferences: Open Keyboard Shortcuts`, then search the name).
+
+| What you want | Command name |
+| --- | --- |
+| Show or hide the integrated terminal | `Terminal: Toggle Terminal` |
+| Open another terminal | `Terminal: Create New Terminal` |
+| Jump to the previous command in the terminal | `Terminal: Scroll To Previous Command` |
+
+`Terminal: Scroll To Previous Command` depends on terminal shell integration marking command boundaries. See [Shell integration](https://code.visualstudio.com/docs/terminal/shell-integration).
